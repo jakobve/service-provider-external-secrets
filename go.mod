@@ -24,6 +24,8 @@ require (
 	sigs.k8s.io/e2e-framework v0.7.0
 )
 
+replace github.com/openmcp-project/extensibility-utils => ../../extensibility-utils
+
 require (
 	al.essio.dev/pkg/shellescape v1.5.1 // indirect
 	cel.dev/expr v0.25.2 // indirect
@@ -43,6 +45,7 @@ require (
 	github.com/fluxcd/pkg/apis/acl v0.11.0 // indirect
 	github.com/fluxcd/pkg/apis/kustomize v1.21.0 // indirect
 	github.com/fluxcd/pkg/kustomize v1.35.6 // indirect
+	github.com/fluxcd/pkg/runtime v0.112.0 // indirect
 	github.com/fluxcd/pkg/tar v1.2.0 // indirect
 	github.com/fsnotify/fsnotify v1.10.1 // indirect
 	github.com/fxamacker/cbor/v2 v2.9.3 // indirect
