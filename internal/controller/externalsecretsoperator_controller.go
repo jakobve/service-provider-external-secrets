@@ -62,12 +62,12 @@ func (r *ExternalSecretsOperatorReconciler) CreateOrUpdate(ctx context.Context, 
 		serviceprovider.StatusProgressing(obj, conditionReasonError, err.Error())
 		return ctrl.Result{}, ctrlerrors.IgnoreInvalidUserInput(err)
 	}
-	reconcileResult := mgr.Apply(ctx)
-	obj.Status.Resources = reconcileResult.GetAllManagedObjects()
-	if reconcileResult.Err != nil {
-		return ctrl.Result{}, updateStatusError(obj, reconcileResult.Err)
+	reconcileResult, err := mgr.Apply(ctx)
+	obj.Status.Resources = reconcileResult.ManagedObjects()
+	if err != nil {
+		return ctrl.Result{}, updateStatusError(obj, err)
 	}
-	if !reconcileResult.Done {
+	if reconcileResult.Requeue {
 		return ctrl.Result{RequeueAfter: pc.PollInterval()}, nil
 	}
 	serviceprovider.StatusReady(obj)
@@ -82,12 +82,12 @@ func (r *ExternalSecretsOperatorReconciler) Delete(ctx context.Context, obj *api
 		serviceprovider.StatusProgressing(obj, conditionReasonError, err.Error())
 		return ctrl.Result{}, ctrlerrors.IgnoreInvalidUserInput(err)
 	}
-	reconcileResult := mgr.Delete(ctx)
-	obj.Status.Resources = reconcileResult.GetAllManagedObjects()
-	if reconcileResult.Err != nil {
-		return ctrl.Result{}, updateStatusError(obj, reconcileResult.Err)
+	reconcileResult, err := mgr.Delete(ctx)
+	obj.Status.Resources = reconcileResult.ManagedObjects()
+	if err != nil {
+		return ctrl.Result{}, updateStatusError(obj, err)
 	}
-	if !reconcileResult.Done {
+	if reconcileResult.Requeue {
 		return ctrl.Result{RequeueAfter: pc.PollInterval()}, nil
 	}
 	return ctrl.Result{}, nil
@@ -104,8 +104,8 @@ func userErrorMessage(err error) string {
 		return ""
 	}
 	var messages []string
-	if errors.Is(err, objectmanager.ErrManagedObjectsFailed) {
-		messages = append(messages, objectmanager.ErrManagedObjectsFailed.Error())
+	if errors.Is(err, objectmanager.ErrReconcileManagedObjects) {
+		messages = append(messages, objectmanager.ErrReconcileManagedObjects.Error())
 	}
 	if errors.Is(err, objectmanager.ErrCleanup) {
 		messages = append(messages, objectmanager.ErrCleanup.Error())
