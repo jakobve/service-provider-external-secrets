@@ -23,7 +23,7 @@ require (
 	sigs.k8s.io/e2e-framework v0.7.0
 )
 
-replace github.com/openmcp-project/extensibility-utils => ../../extensibility-utils
+replace github.com/openmcp-project/extensibility-utils => github.com/jakobve/extensibility-utils v0.0.0-20260918131750-8f1a18fda2c4
 
 require (
 	al.essio.dev/pkg/shellescape v1.5.1 // indirect
