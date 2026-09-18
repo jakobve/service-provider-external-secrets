@@ -92,8 +92,8 @@ func Test_updateStatusError(t *testing.T) {
 		{
 			name:        "resource error",
 			obj:         &apiv1alpha1.ExternalSecretsOperator{},
-			err:         objectmanager.ErrManagedObjectsFailed,
-			wantMessage: objectmanager.ErrManagedObjectsFailed.Error(),
+			err:         objectmanager.ErrReconcileManagedObjects,
+			wantMessage: objectmanager.ErrReconcileManagedObjects.Error(),
 		},
 		{
 			name:        "cleanup error",
@@ -104,14 +104,14 @@ func Test_updateStatusError(t *testing.T) {
 		{
 			name:        "combined resource and cleanup error",
 			obj:         &apiv1alpha1.ExternalSecretsOperator{},
-			err:         fmt.Errorf("%w: %w", objectmanager.ErrManagedObjectsFailed, objectmanager.ErrCleanup),
-			wantMessage: fmt.Sprintf("%s; %s", objectmanager.ErrManagedObjectsFailed.Error(), objectmanager.ErrCleanup.Error()),
+			err:         fmt.Errorf("%w: %w", objectmanager.ErrReconcileManagedObjects, objectmanager.ErrCleanup),
+			wantMessage: fmt.Sprintf("%s; %s", objectmanager.ErrReconcileManagedObjects.Error(), objectmanager.ErrCleanup.Error()),
 		},
 		{
 			name:        "resource error wrapping non-user-facing error",
 			obj:         &apiv1alpha1.ExternalSecretsOperator{},
-			err:         fmt.Errorf("%w: %w", objectmanager.ErrManagedObjectsFailed, errors.New("internal detail")),
-			wantMessage: objectmanager.ErrManagedObjectsFailed.Error(),
+			err:         fmt.Errorf("%w: %w", objectmanager.ErrReconcileManagedObjects, errors.New("internal detail")),
+			wantMessage: objectmanager.ErrReconcileManagedObjects.Error(),
 		},
 		{
 			name:        "non-framework error surfaces generic fallback message",
@@ -122,8 +122,8 @@ func Test_updateStatusError(t *testing.T) {
 		{
 			name:            "invalid user input is ignored",
 			obj:             &apiv1alpha1.ExternalSecretsOperator{},
-			err:             fmt.Errorf("%w: %w", objectmanager.ErrManagedObjectsFailed, fmt.Errorf("%w: value out of range", ctrlerrors.ErrInvalidUserInput)),
-			wantMessage:     objectmanager.ErrManagedObjectsFailed.Error(),
+			err:             fmt.Errorf("%w: %w", objectmanager.ErrReconcileManagedObjects, fmt.Errorf("%w: value out of range", ctrlerrors.ErrInvalidUserInput)),
+			wantMessage:     objectmanager.ErrReconcileManagedObjects.Error(),
 			wantIgnoreError: true,
 		},
 	}
