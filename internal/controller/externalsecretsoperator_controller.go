@@ -23,14 +23,14 @@ import (
 	"strings"
 
 	"github.com/fluxcd/pkg/apis/meta"
-	fluxpkg "github.com/openmcp-project/extensibility-utils/pkg/flux"
-	"github.com/openmcp-project/extensibility-utils/pkg/objectmanager"
-	secretpkg "github.com/openmcp-project/extensibility-utils/pkg/secret"
 	corev1 "k8s.io/api/core/v1"
 
 	ctrl "sigs.k8s.io/controller-runtime"
 
 	"github.com/openmcp-project/controller-utils/pkg/clusters"
+	"github.com/openmcp-project/extensibility-utils/pkg/objectmanager"
+	"github.com/openmcp-project/extensibility-utils/pkg/objectmanager/flux"
+	"github.com/openmcp-project/extensibility-utils/pkg/objectmanager/secret"
 
 	libutils "github.com/openmcp-project/openmcp-operator/lib/utils"
 
@@ -130,12 +130,12 @@ func (r *ExternalSecretsOperatorReconciler) createObjectManager(obj *apiv1alpha1
 	if err != nil {
 		return nil, fmt.Errorf("failed to extract helm values: %w", err)
 	}
-	platformCluster := objectmanager.NewCluster(r.PlatformCluster.Client(), tenantNamespace, objectmanager.PlatformCluster)
+	platformCluster := objectmanager.NewCluster(r.PlatformCluster, tenantNamespace, objectmanager.PlatformCluster)
 	externalSecretsNamespace := externalsecrets.DefaultNamespace
 	if helmValues.NamespaceOverride != "" {
 		externalSecretsNamespace = helmValues.NamespaceOverride
 	}
-	mcpCluster := objectmanager.NewCluster(clusters.MCPCluster.Client(), externalSecretsNamespace, objectmanager.ManagedControlPlane)
+	mcpCluster := objectmanager.NewCluster(clusters.MCPCluster, externalSecretsNamespace, objectmanager.ManagedControlPlane)
 	// sync image pull secrets from platform cluster to mcp
 	// Note: No prefix needed - these go to the MCP cluster's ESO namespace,
 	// not the shared tenant namespace where collisions can occur
@@ -153,7 +153,7 @@ func (r *ExternalSecretsOperatorReconciler) createObjectManager(obj *apiv1alpha1
 	if prefixedChartPullSecret != "" {
 		fluxResourceVersion.ChartPullSecret = prefixedChartPullSecret
 	}
-	err = fluxpkg.ManageResources(fluxpkg.ResourceConfig{
+	err = flux.ManageResources(flux.ResourceConfig{
 		Cluster:           platformCluster,
 		Namespace:         externalSecretsNamespace,
 		Interval:          pc.PollInterval(),
@@ -176,8 +176,8 @@ func (r *ExternalSecretsOperatorReconciler) createObjectManager(obj *apiv1alpha1
 		}
 	}
 
-	platformSecretCleaner := secretpkg.NewCleaner(platformCluster, pc.Name, tenantNamespace, secretsToKeep)
-	controlPlaneSecretCleaner := secretpkg.NewCleaner(mcpCluster, pc.Name, externalSecretsNamespace, helmValues.Global.ImagePullSecrets)
+	platformSecretCleaner := secret.NewCleaner(platformCluster, pc.Name, tenantNamespace, secretsToKeep)
+	controlPlaneSecretCleaner := secret.NewCleaner(mcpCluster, pc.Name, externalSecretsNamespace, helmValues.Global.ImagePullSecrets)
 
 	mgr.AddCleaner(platformSecretCleaner)
 	mgr.AddCleaner(controlPlaneSecretCleaner)
@@ -189,8 +189,8 @@ func (r *ExternalSecretsOperatorReconciler) createObjectManager(obj *apiv1alpha1
 // platform cluster's pod namespace into the MCP cluster's ESO namespace.
 func (r *ExternalSecretsOperatorReconciler) manageImagePullSecrets(platformCluster, mcpCluster objectmanager.Cluster, helmValues *externalsecrets.HelmValues, externalSecretsNamespace string) error {
 	for _, imagePullSecret := range helmValues.Global.ImagePullSecrets {
-		err := secretpkg.ManagePullSecret(mcpCluster, secretpkg.CopyConfig{
-			SourceClient:    platformCluster.GetClient(),
+		err := secret.ManagePullSecret(mcpCluster, secret.CopyConfig{
+			SourceClient:    platformCluster.Client(),
 			SourceName:      imagePullSecret.Name,
 			SourceNamespace: r.PodNamespace,
 			TargetNamespace: externalSecretsNamespace,
@@ -211,12 +211,12 @@ func (r *ExternalSecretsOperatorReconciler) manageChartPullSecret(platformCluste
 	if sourceSecret == "" {
 		return "", nil
 	}
-	prefixedChartPullSecret, err := secretpkg.PrefixName(sourceSecret, externalsecrets.ChartPullSecretPrefix)
+	prefixedChartPullSecret, err := secret.PrefixName(sourceSecret, externalsecrets.ChartPullSecretPrefix)
 	if err != nil {
 		return "", fmt.Errorf("error generating secret name: %w", err)
 	}
-	err = secretpkg.ManagePullSecret(platformCluster, secretpkg.CopyConfig{
-		SourceClient:    platformCluster.GetClient(),
+	err = secret.ManagePullSecret(platformCluster, secret.CopyConfig{
+		SourceClient:    platformCluster.Client(),
 		SourceName:      sourceSecret,
 		SourceNamespace: r.PodNamespace,
 		TargetNamespace: tenantNamespace,

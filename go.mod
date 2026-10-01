@@ -5,9 +5,9 @@ go 1.27.1
 require (
 	github.com/fluxcd/helm-controller/api v1.6.4
 	github.com/fluxcd/pkg/apis/meta v1.32.0
-	github.com/fluxcd/pkg/runtime v0.114.0
 	github.com/fluxcd/source-controller/api v1.9.5
 	github.com/openmcp-project/controller-utils v0.33.1
+	github.com/openmcp-project/extensibility-utils v0.1.1-0.20260930125939-1f7648d8fd56
 	github.com/openmcp-project/opencontrolplane-runtime v1.4.1
 	github.com/openmcp-project/openmcp-operator/api v1.4.1
 	github.com/openmcp-project/openmcp-operator/lib v1.4.1
@@ -19,12 +19,9 @@ require (
 	k8s.io/apimachinery v0.37.1
 	k8s.io/client-go v0.37.1
 	k8s.io/klog/v2 v2.140.0
-	k8s.io/utils v0.0.0-20260707023825-cf1189d6abe3
 	sigs.k8s.io/controller-runtime v0.25.1
 	sigs.k8s.io/e2e-framework v0.7.0
 )
-
-replace github.com/openmcp-project/extensibility-utils => github.com/jakobve/extensibility-utils v0.0.0-20260918131750-8f1a18fda2c4
 
 require (
 	al.essio.dev/pkg/shellescape v1.5.1 // indirect
@@ -45,7 +42,7 @@ require (
 	github.com/fluxcd/pkg/apis/acl v0.11.0 // indirect
 	github.com/fluxcd/pkg/apis/kustomize v1.21.0 // indirect
 	github.com/fluxcd/pkg/kustomize v1.35.6 // indirect
-	github.com/fluxcd/pkg/runtime v0.112.0 // indirect
+	github.com/fluxcd/pkg/runtime v0.114.0 // indirect
 	github.com/fluxcd/pkg/tar v1.2.0 // indirect
 	github.com/fsnotify/fsnotify v1.10.1 // indirect
 	github.com/fxamacker/cbor/v2 v2.9.3 // indirect
@@ -126,6 +123,7 @@ require (
 	k8s.io/component-base v0.37.1 // indirect
 	k8s.io/kube-openapi v0.0.0-20260821135717-be32def86098 // indirect
 	k8s.io/streaming v0.37.1 // indirect
+	k8s.io/utils v0.0.0-20260707023825-cf1189d6abe3 // indirect
 	sigs.k8s.io/apiserver-network-proxy/konnectivity-client v0.36.0 // indirect
 	sigs.k8s.io/json v0.0.0-20250730193827-2d320260d730 // indirect
 	sigs.k8s.io/kind v0.33.0 // indirect

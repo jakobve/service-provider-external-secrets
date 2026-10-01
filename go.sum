@@ -129,8 +129,6 @@ github.com/hashicorp/go-cleanhttp v0.5.2 h1:035FKYIWjmULyFRBKPs8TBQoi0x6d9G4xc9n
 github.com/hashicorp/go-cleanhttp v0.5.2/go.mod h1:kO/YDlP8L1346E6Sodw+PrpBSV4/SoxCXGY6BqNFT48=
 github.com/inconshreveable/mousetrap v1.1.0 h1:wN+x4NVGpMsO7ErUn/mUI3vEoE6Jt13X2s0bqwp9tc8=
 github.com/inconshreveable/mousetrap v1.1.0/go.mod h1:vpF70FUmC8bwa3OWnCshd2FqLfsEA9PFc4w1p2J65bw=
-github.com/jakobve/extensibility-utils v0.0.0-20260918131750-8f1a18fda2c4 h1:4xfxk+4JARG9F7n0//C0tTgzATBb6jGiptOiGCHb2oY=
-github.com/jakobve/extensibility-utils v0.0.0-20260918131750-8f1a18fda2c4/go.mod h1:3UUh5T01HphKJgy2J6JR5uDPQDar5rHU/4fWNj7peL0=
 github.com/json-iterator/go v1.1.12 h1:PV8peI4a0ysnczrg+LtxykD8LfKY9ML6u2jnxaEnrnM=
 github.com/json-iterator/go v1.1.12/go.mod h1:e30LSqwooZae/UwlEbR2852Gd8hjQvJoHmT4TnhNGBo=
 github.com/klauspost/compress v1.19.1 h1:VsB4HPswih7mmZ8WleSFQ75c/Ui1M4trX5oAsJnhSlk=
@@ -157,6 +155,8 @@ github.com/onsi/gomega v1.43.0 h1:VlG/1FxqNxhSO+lq/OHBNaaqwiBK/mO8JbVkX9Y+FeU=
 github.com/onsi/gomega v1.43.0/go.mod h1:REff/hsDsodHoKlWsP2mAPhu1+5/6hVYNf9rIEBpeSg=
 github.com/openmcp-project/controller-utils v0.33.1 h1:4bQ3dNjQF20K0++6uDp9x/dwzvfbXgmqcE/2V6KX/88=
 github.com/openmcp-project/controller-utils v0.33.1/go.mod h1:86/HACzkUsNb3P5h8TmTykLZWlHreKBfZW2SIj2QlpE=
+github.com/openmcp-project/extensibility-utils v0.1.1-0.20260930125939-1f7648d8fd56 h1:G71tnpAM5gfXKexQFNP+Q7bcFCOde/29Gt/tjKL/Izg=
+github.com/openmcp-project/extensibility-utils v0.1.1-0.20260930125939-1f7648d8fd56/go.mod h1:3UUh5T01HphKJgy2J6JR5uDPQDar5rHU/4fWNj7peL0=
 github.com/openmcp-project/opencontrolplane-runtime v1.4.1 h1:pH4nRDPV022+7y5ZXeBGOfdfcdt+uc6yjAxf9Iuxpu8=
 github.com/openmcp-project/opencontrolplane-runtime v1.4.1/go.mod h1:iwp5xDd1D88FJRVlh+emegNJ/of92qyiQ9655S2mLgs=
 github.com/openmcp-project/openmcp-operator/api v1.4.1 h1:Y8t0JDF18cmKDBHSxQlAxyIJzcftBdjNFTeU7NKpMNw=
