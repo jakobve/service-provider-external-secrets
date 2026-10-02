@@ -148,20 +148,18 @@ func (r *ExternalSecretsOperatorReconciler) createObjectManager(obj *apiv1alpha1
 	if err != nil {
 		return nil, err
 	}
-
-	fluxResourceVersion := esoVersion
-	if prefixedChartPullSecret != "" {
-		fluxResourceVersion.ChartPullSecret = prefixedChartPullSecret
-	}
-	err = flux.ManageResources(flux.ResourceConfig{
-		Cluster:           platformCluster,
-		Namespace:         externalSecretsNamespace,
-		Interval:          pc.PollInterval(),
-		KubeConfig:        &meta.KubeConfigReference{SecretRef: &meta.SecretKeyReference{Name: clusters.MCPAccessSecretKey.Name, Key: "kubeconfig"}},
-		Version:           fluxResourceVersion,
-		OCIRepositoryName: pc.Name,
-		HelmReleaseName:   pc.Name,
-	})
+	err = flux.ManageHelmRelease(platformCluster, &flux.HelmRelease{
+		Name:      pc.Name,
+		Namespace: externalSecretsNamespace,
+		ChartSource: flux.OCIRepository{
+			Name:         pc.Name,
+			ChartURL:     esoVersion.ChartURL,
+			ChartVersion: esoVersion.ChartVersion,
+		},
+	},
+		flux.WithKubeConfig(meta.KubeConfigReference{SecretRef: &meta.SecretKeyReference{Name: clusters.MCPAccessSecretKey.Name, Key: "kubeconfig"}}),
+		flux.WithChartPullSecret(prefixedChartPullSecret),
+		flux.WithValues(esoVersion.HelmValues))
 	if err != nil {
 		return nil, fmt.Errorf("configuring Flux resources: %w", err)
 	}
