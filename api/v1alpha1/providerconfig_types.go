@@ -40,9 +40,9 @@ type ProviderConfigSpec struct {
 	PollInterval *metav1.Duration `json:"pollInterval,omitempty"`
 }
 
-// ExternalSecretsVersion defines a version of a Service Operator that can be installed.
+// ExternalSecretsVersion defines a version of External Secrets Operator that can be installed.
 type ExternalSecretsVersion struct {
-	// Version is the Service Operator version to install.
+	// Version is the External Secrets Operator version to install.
 	// This version is compared with ExternalSecretsOperator.Spec.Version to select
 	// the deployment artifacts for a version.
 	// +required

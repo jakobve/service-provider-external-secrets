@@ -11,6 +11,7 @@ import (
 	helmv2 "github.com/fluxcd/helm-controller/api/v2"
 	sourcev1 "github.com/fluxcd/source-controller/api/v1"
 	libutils "github.com/openmcp-project/openmcp-operator/lib/utils"
+	"github.com/openmcp-project/service-provider-external-secrets/pkg/externalsecrets"
 
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"sigs.k8s.io/e2e-framework/klient/k8s"
@@ -27,11 +28,6 @@ import (
 
 const mcpA = "mcp-a"
 const mcpB = "mcp-b"
-
-// providerConfigName is the name of the ProviderConfig deployed to the platform
-// cluster (see test/e2e/platform/providerconfig.yaml). The controller uses this
-// name for both the OCIRepository and the HelmRelease it manages.
-const providerConfigName = "externalsecretsoperator"
 
 func TestServiceProvider(t *testing.T) {
 	var onboardingObjects unstructured.UnstructuredList
@@ -67,8 +63,8 @@ func TestServiceProvider(t *testing.T) {
 				return ctx
 			},
 		).
-		Assess("platform cluster resources tenant A", assesPlatformResources(mcpA, providerConfigName, "sp-eso-privateregcred")).
-		Assess("platform cluster resources tenant B", assesPlatformResources(mcpB, providerConfigName, "")).
+		Assess("platform cluster resources tenant A", assesPlatformResources(mcpA, "sp-eso-privateregcred")).
+		Assess("platform cluster resources tenant B", assesPlatformResources(mcpB, "")).
 		Assess("ManagedControlPlane resources have been created", func(ctx context.Context, t *testing.T, c *envconf.Config) context.Context {
 			// we only need to test tenant A because B uses an ESO version without pull secrets (see ProviderConfig)
 			mcp, err := clusterutils.MCPConfig(ctx, c, mcpA)
@@ -112,7 +108,7 @@ func TestServiceProvider(t *testing.T) {
 	testenv.Test(t, basicProviderTest.Feature())
 }
 
-func assesPlatformResources(mcpName, providerName, chartPullSecret string) features.Func {
+func assesPlatformResources(mcpName, chartPullSecret string) features.Func {
 	return func(ctx context.Context, t *testing.T, c *envconf.Config) context.Context {
 		tenantNamespace, err := libutils.StableMCPNamespace(mcpName, "default")
 		if err != nil {
@@ -120,13 +116,13 @@ func assesPlatformResources(mcpName, providerName, chartPullSecret string) featu
 			return ctx
 		}
 		ociRepo := &sourcev1.OCIRepository{}
-		ociRepo.SetName(providerName)
+		ociRepo.SetName(externalsecrets.OCIRepositoryName)
 		ociRepo.SetNamespace(tenantNamespace)
 		if err := wait.For(openmcpconditions.Match(ociRepo, c, "Ready", corev1.ConditionTrue), wait.WithTimeout(2*time.Minute)); err != nil {
 			t.Errorf("OCIRepository not ready: %v", err)
 		}
 		helmRelease := &helmv2.HelmRelease{}
-		helmRelease.SetName(providerName)
+		helmRelease.SetName(externalsecrets.HelmReleaseName)
 		helmRelease.SetNamespace(tenantNamespace)
 		if err := wait.For(openmcpconditions.Match(helmRelease, c, "Ready", corev1.ConditionTrue), wait.WithTimeout(2*time.Minute)); err != nil {
 			t.Errorf("HelmRelease not ready: %v", err)

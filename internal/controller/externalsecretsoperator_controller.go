@@ -21,6 +21,7 @@ import (
 	"errors"
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/fluxcd/pkg/apis/meta"
 	corev1 "k8s.io/api/core/v1"
@@ -68,7 +69,7 @@ func (r *ExternalSecretsOperatorReconciler) CreateOrUpdate(ctx context.Context, 
 		return ctrl.Result{}, updateStatusError(obj, err)
 	}
 	if reconcileResult.Requeue {
-		return ctrl.Result{RequeueAfter: pc.PollInterval()}, nil
+		return ctrl.Result{RequeueAfter: time.Second * 5}, nil
 	}
 	serviceprovider.StatusReady(obj)
 	return ctrl.Result{}, nil
@@ -88,7 +89,7 @@ func (r *ExternalSecretsOperatorReconciler) Delete(ctx context.Context, obj *api
 		return ctrl.Result{}, updateStatusError(obj, err)
 	}
 	if reconcileResult.Requeue {
-		return ctrl.Result{RequeueAfter: pc.PollInterval()}, nil
+		return ctrl.Result{RequeueAfter: time.Second * 5}, nil
 	}
 	return ctrl.Result{}, nil
 }
@@ -149,10 +150,10 @@ func (r *ExternalSecretsOperatorReconciler) createObjectManager(obj *apiv1alpha1
 		return nil, err
 	}
 	err = flux.ManageHelmRelease(platformCluster, &flux.HelmRelease{
-		Name:      pc.Name,
+		Name:      externalsecrets.HelmReleaseName,
 		Namespace: externalSecretsNamespace,
 		ChartSource: flux.OCIRepository{
-			Name:         pc.Name,
+			Name:         externalsecrets.OCIRepositoryName,
 			ChartURL:     *esoVersion.ChartURL,
 			ChartVersion: esoVersion.ChartVersion,
 		},
