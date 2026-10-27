@@ -35,7 +35,7 @@ type ExternalSecretsOperatorStatus struct {
 
 	// Resources managed by this External Secrets Operator instance
 	// +optional
-	Resources []objectmanager.ManagedObject `json:"managedObjects,omitempty"`
+	Resources []objectmanager.ManagedObject `json:"resources,omitempty"`
 }
 
 // ExternalSecretsOperator is the Schema for the externalsecretsoperators API

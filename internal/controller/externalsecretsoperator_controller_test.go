@@ -35,7 +35,7 @@ func Test_selectExternalSecretsVersion(t *testing.T) {
 		// Named input parameters for target function.
 		requestedVersion string
 		pc               *apiv1alpha1.ProviderConfig
-		want             apiv1alpha1.RequestedVersion
+		want             apiv1alpha1.ExternalSecretsVersion
 		wantErr          bool
 	}{
 		{
@@ -43,10 +43,10 @@ func Test_selectExternalSecretsVersion(t *testing.T) {
 			requestedVersion: "v1",
 			pc: &apiv1alpha1.ProviderConfig{
 				Spec: apiv1alpha1.ProviderConfigSpec{
-					Versions: []apiv1alpha1.RequestedVersion{{Version: "v1"}, {Version: "v2"}},
+					Versions: []apiv1alpha1.ExternalSecretsVersion{{Version: "v1"}, {Version: "v2"}},
 				},
 			},
-			want: apiv1alpha1.RequestedVersion{
+			want: apiv1alpha1.ExternalSecretsVersion{
 				Version: "v1",
 			},
 			wantErr: false,
@@ -56,10 +56,10 @@ func Test_selectExternalSecretsVersion(t *testing.T) {
 			requestedVersion: "v3",
 			pc: &apiv1alpha1.ProviderConfig{
 				Spec: apiv1alpha1.ProviderConfigSpec{
-					Versions: []apiv1alpha1.RequestedVersion{{Version: "v1"}, {Version: "v2"}},
+					Versions: []apiv1alpha1.ExternalSecretsVersion{{Version: "v1"}, {Version: "v2"}},
 				},
 			},
-			want:    apiv1alpha1.RequestedVersion{},
+			want:    apiv1alpha1.ExternalSecretsVersion{},
 			wantErr: true,
 		},
 	}

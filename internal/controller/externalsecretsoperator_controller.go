@@ -126,7 +126,7 @@ func (r *ExternalSecretsOperatorReconciler) createObjectManager(obj *apiv1alpha1
 	if err != nil {
 		return nil, err
 	}
-	helmValues, err := externalsecrets.ExtractHelmValues(esoVersion.GetHelmValues())
+	helmValues, err := externalsecrets.ExtractHelmValues(esoVersion.HelmValues)
 	if err != nil {
 		return nil, fmt.Errorf("failed to extract helm values: %w", err)
 	}
@@ -153,7 +153,7 @@ func (r *ExternalSecretsOperatorReconciler) createObjectManager(obj *apiv1alpha1
 		Namespace: externalSecretsNamespace,
 		ChartSource: flux.OCIRepository{
 			Name:         pc.Name,
-			ChartURL:     esoVersion.ChartURL,
+			ChartURL:     *esoVersion.ChartURL,
 			ChartVersion: esoVersion.ChartVersion,
 		},
 	},
@@ -204,8 +204,8 @@ func (r *ExternalSecretsOperatorReconciler) manageImagePullSecrets(platformClust
 // manageChartPullSecret registers a prefixed copy of the chart pull secret within
 // the platform cluster (pod namespace -> tenant namespace) and returns the prefixed
 // name, or an empty string if no chart pull secret is configured.
-func (r *ExternalSecretsOperatorReconciler) manageChartPullSecret(platformCluster objectmanager.Cluster, esoVersion apiv1alpha1.RequestedVersion, tenantNamespace string) (string, error) {
-	sourceSecret := esoVersion.GetChartPullSecret()
+func (r *ExternalSecretsOperatorReconciler) manageChartPullSecret(platformCluster objectmanager.Cluster, esoVersion apiv1alpha1.ExternalSecretsVersion, tenantNamespace string) (string, error) {
+	sourceSecret := esoVersion.ChartPullSecret
 	if sourceSecret == "" {
 		return "", nil
 	}
@@ -226,11 +226,11 @@ func (r *ExternalSecretsOperatorReconciler) manageChartPullSecret(platformCluste
 	return prefixedChartPullSecret, nil
 }
 
-func selectExternalSecretsVersion(requestedVersion string, pc *apiv1alpha1.ProviderConfig) (apiv1alpha1.RequestedVersion, error) {
+func selectExternalSecretsVersion(requestedVersion string, pc *apiv1alpha1.ProviderConfig) (apiv1alpha1.ExternalSecretsVersion, error) {
 	for _, configVersion := range pc.Spec.Versions {
 		if configVersion.Version == requestedVersion {
 			return configVersion, nil
 		}
 	}
-	return apiv1alpha1.RequestedVersion{}, fmt.Errorf("%w: requested version (%s) is not available", ctrlerrors.ErrInvalidUserInput, requestedVersion)
+	return apiv1alpha1.ExternalSecretsVersion{}, fmt.Errorf("%w: requested version (%s) is not available", ctrlerrors.ErrInvalidUserInput, requestedVersion)
 }
