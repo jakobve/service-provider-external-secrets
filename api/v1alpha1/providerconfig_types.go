@@ -24,6 +24,8 @@ import (
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
+const defaultPollInterval = time.Minute * 10
+
 // ProviderConfigSpec defines the desired state of ProviderConfig
 type ProviderConfigSpec struct {
 	// Versions specify the valid inputs for the ExternalSecretsOperator.Spec.Version field.
@@ -35,7 +37,7 @@ type ProviderConfigSpec struct {
 
 	// PollInterval at which the controller requeues to detect drift
 	// +optional
-	// +kubebuilder:default:="1m"
+	// +kubebuilder:default:="10m"
 	// +kubebuilder:validation:Format=duration
 	PollInterval *metav1.Duration `json:"pollInterval,omitempty"`
 }
@@ -115,5 +117,8 @@ func init() {
 
 // PollInterval returns the poll interval duration from the spec.
 func (o *ProviderConfig) PollInterval() time.Duration {
+	if o.Spec.PollInterval == nil {
+		return defaultPollInterval
+	}
 	return o.Spec.PollInterval.Duration
 }

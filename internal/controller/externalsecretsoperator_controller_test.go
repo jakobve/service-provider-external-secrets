@@ -134,7 +134,6 @@ func Test_updateStatusError(t *testing.T) {
 			assert.Equal(t, tt.wantMessage, cond.Message)
 			assert.Equal(t, metav1.ConditionFalse, cond.Status)
 			assert.Equal(t, conditionReasonError, cond.Reason)
-			assert.Equal(t, tt.wantMessage, cond.Message)
 			if tt.wantIgnoreError {
 				assert.Nil(t, gotErr)
 				return

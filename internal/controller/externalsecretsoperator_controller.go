@@ -25,6 +25,7 @@ import (
 
 	"github.com/fluxcd/pkg/apis/meta"
 	corev1 "k8s.io/api/core/v1"
+	"k8s.io/utils/ptr"
 
 	ctrl "sigs.k8s.io/controller-runtime"
 
@@ -154,17 +155,19 @@ func (r *ExternalSecretsOperatorReconciler) createObjectManager(obj *apiv1alpha1
 		Namespace: externalSecretsNamespace,
 		ChartSource: flux.OCIRepository{
 			Name:         externalsecrets.OCIRepositoryName,
-			ChartURL:     *esoVersion.ChartURL,
+			ChartURL:     ptr.Deref(esoVersion.ChartURL, externalsecrets.DefaultChartURL),
 			ChartVersion: esoVersion.ChartVersion,
 		},
 	},
 		flux.WithKubeConfig(meta.KubeConfigReference{SecretRef: &meta.SecretKeyReference{Name: clusters.MCPAccessSecretKey.Name, Key: "kubeconfig"}}),
 		flux.WithChartPullSecret(prefixedChartPullSecret),
-		flux.WithValues(esoVersion.HelmValues))
+		flux.WithValues(esoVersion.HelmValues),
+		flux.WithOCIRepoInterval(pc.PollInterval()),
+		flux.WithHelmReleaseInterval(pc.PollInterval()))
 	if err != nil {
 		return nil, fmt.Errorf("configuring Flux resources: %w", err)
 	}
-	mgr := objectmanager.NewManager(pc.Name)
+	mgr := objectmanager.NewManager(externalsecrets.LabelManagedByValue)
 	mgr.AddCluster(mcpCluster)
 	mgr.AddCluster(platformCluster)
 
